@@ -14,9 +14,9 @@ contract GrantFunder {
     bytes32 public constant ADMIN = keccak256(abi.encodePacked("ADMIN"));
 
 
-    mapping(bytes32 => mapping(address => bool)) role;
-    mapping(uint256 => Grant) grantById;
-    mapping(uint256 => mapping(address => uint256)) contributions;
+    mapping(bytes32 => mapping(address => bool)) public role;
+    mapping(uint256 => Grant) public grantById;
+    mapping(uint256 => mapping(address => uint256)) public contributions;
 
     struct Grant {
         uint256 goal;
@@ -83,6 +83,7 @@ contract GrantFunder {
     }
 
     function reclaimDeposit(uint256 grantNo) payable external onlyRole(FUNDER) {
+        require(msg.sender != address(0), "This is not a valid address.");
         Grant storage grant = grantById[grantNo];
         // Remember to add in || in case block.timestamp > endTime but goal hasn't been reached. 
         require((grant.endTime >= block.timestamp && grant.goal > grant.grantBalance) || grant.goal > grant.grantBalance, "This campaign has ended and has met its fundraising goal.");
